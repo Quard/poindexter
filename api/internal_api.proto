@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package internal_api;
+
+service InternalAPI {
+  rpc Add(URL) returns (ReadingListRecord) {}
+  rpc List(User) returns (stream ReadingListRecord) {}
+  rpc MarkAsRead(ID) returns (ReadingListRecord) {}
+  rpc Del(ID) returns (ReadingListRecord) {}
+}
+
+message URL {
+  string userID = 1;
+  string url = 2;
+}
+
+message ID {
+  string userID = 1;
+  string id = 2;
+}
+
+message User {
+  string ID = 1;
+}
+
+message ReadingListRecord {
+  string id = 1;
+  string userID = 2;
+  string title = 3;
+  string url = 4;
+  string imageUrl = 5;
+  int64 created = 6;
+  bool isRead = 7;
+}
