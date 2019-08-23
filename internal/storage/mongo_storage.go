@@ -63,7 +63,9 @@ func (s MongoStorage) List(userID string, processor func(record *reading_list.Re
 		sentry.CaptureException(errConv)
 		return errors.New("authentication problem")
 	}
-	cursor, err := listCollection.Find(ctx, bson.M{"user_id": userObjectID})
+	opts := options.Find()
+	opts.SetSort(bson.M{"is_read": 1, "title": 1})
+	cursor, err := listCollection.Find(ctx, bson.M{"user_id": userObjectID}, opts)
 	if err != nil {
 		sentry.CaptureException(err)
 		return errors.New("unable to get reading list")

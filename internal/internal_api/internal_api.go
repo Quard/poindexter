@@ -16,29 +16,12 @@ func (srv internalAPIServer) Add(ctx context.Context, url *URL) (*ReadingListRec
 		return &ReadingListRecord{}, err
 	}
 
-	respRecord := &ReadingListRecord{
-		Id:       record.ID.Hex(),
-		UserID:   record.UserID.Hex(),
-		Title:    record.Title,
-		Url:      record.URL,
-		ImageUrl: record.ImageURL,
-		Created:  record.Created.Unix(),
-		IsRead:   record.IsRead,
-	}
-
-	return respRecord, nil
+	return convertToReadingListRecord(record), nil
 }
 
 func (srv internalAPIServer) List(user *User, stream InternalAPI_ListServer) error {
 	return srv.storage.List(user.ID, func(record *reading_list.Record) {
-		err := stream.Send(&ReadingListRecord{
-			Id:       record.ID.Hex(),
-			Title:    record.Title,
-			Url:      record.URL,
-			ImageUrl: record.ImageURL,
-			Created:  record.Created.Unix(),
-			IsRead:   record.IsRead,
-		})
+		err := stream.Send(convertToReadingListRecord(*record))
 		if err != nil {
 			sentry.CaptureException(err)
 		}
